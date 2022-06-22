@@ -28,6 +28,7 @@ import {
   $createHeadingNode,
   $createQuoteNode,
   $isHeadingNode,
+  HeadingTagType,
 } from '@lexical/rich-text';
 import {
   $getSelectionStyleValueForProperty,
@@ -65,7 +66,7 @@ import {
   UNDO_COMMAND,
 } from 'lexical';
 import * as React from 'react';
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {ChangeEvent, useCallback, useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {IS_APPLE} from 'shared/environment';
 
@@ -213,6 +214,7 @@ function FloatingLinkEditor({editor}: {editor: LexicalEditor}): JSX.Element {
     const rootElement = editor.getRootElement();
     if (
       selection !== null &&
+      nativeSelection !== null &&
       !nativeSelection.isCollapsed &&
       rootElement !== null &&
       rootElement.contains(nativeSelection.anchorNode)
@@ -647,7 +649,7 @@ function BlockFormatDropDown({
     }
   };
 
-  const formatHeading = (headingSize) => {
+  const formatHeading = (headingSize: HeadingTagType) => {
     if (blockType !== headingSize) {
       editor.update(() => {
         const selection = $getSelection();
@@ -791,7 +793,7 @@ function Select({
   value,
 }: {
   className: string;
-  onChange: (event: {target: {value: string}}) => void;
+  onChange: (e: ChangeEvent) => void;
   options: [string, string][];
   value: string;
 }): JSX.Element {
@@ -974,7 +976,7 @@ export default function ToolbarPlugin(): JSX.Element {
   }, [activeEditor]);
 
   const onFontSizeSelect = useCallback(
-    (e) => {
+    (e: ChangeEvent) => {
       applyStyleText({'font-size': e.target.value});
     },
     [applyStyleText],
@@ -995,7 +997,7 @@ export default function ToolbarPlugin(): JSX.Element {
   );
 
   const onFontFamilySelect = useCallback(
-    (e) => {
+    (e: ChangeEvent) => {
       applyStyleText({'font-family': e.target.value});
     },
     [applyStyleText],
@@ -1010,7 +1012,7 @@ export default function ToolbarPlugin(): JSX.Element {
   }, [editor, isLink]);
 
   const onCodeLanguageSelect = useCallback(
-    (e) => {
+    (e: ChangeEvent) => {
       activeEditor.update(() => {
         if (selectedElementKey !== null) {
           const node = $getNodeByKey(selectedElementKey);

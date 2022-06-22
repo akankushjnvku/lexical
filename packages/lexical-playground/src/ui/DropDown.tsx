@@ -133,7 +133,7 @@ export default function DropDown({
   buttonClassName: string;
   buttonIconClassName?: string;
   buttonLabel?: string;
-  children: JSX.Element | string | (JSX.Element | string)[];
+  children: ReactNode;
   stopCloseOnClickSelf?: boolean;
 }): JSX.Element {
   const dropDownRef = useRef<HTMLDivElement>(null);

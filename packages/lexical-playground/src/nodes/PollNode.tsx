@@ -22,10 +22,13 @@ import {
   DOMConversionMap,
   DOMConversionOutput,
   DOMExportOutput,
+  GridSelection,
   KEY_BACKSPACE_COMMAND,
   KEY_DELETE_COMMAND,
   LexicalNode,
   NodeKey,
+  NodeSelection,
+  RangeSelection,
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
@@ -166,7 +169,9 @@ function PollComponent({
   const totalVotes = useMemo(() => getTotalVotes(options), [options]);
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
-  const [selection, setSelection] = useState(null);
+  const [selection, setSelection] = useState<
+    RangeSelection | NodeSelection | GridSelection | null
+  >(null);
   const ref = useRef(null);
 
   const onDelete = useCallback(
@@ -276,10 +281,13 @@ export type SerializedPollNode = Spread<
   SerializedLexicalNode
 >;
 
-function convertPollElement(domNode: HTMLElement): DOMConversionOutput {
+function convertPollElement(domNode: HTMLElement): DOMConversionOutput | null {
   const question = domNode.getAttribute('data-lexical-poll-question');
-  const node = $createPollNode(question);
-  return {node};
+  if (question !== null) {
+    const node = $createPollNode(question);
+    return {node};
+  }
+  return null;
 }
 
 export class PollNode extends DecoratorNode<JSX.Element> {
@@ -356,9 +364,9 @@ export class PollNode extends DecoratorNode<JSX.Element> {
     self.__options = options;
   }
 
-  static importDOM(): DOMConversionMap | null {
+  static importDOM(): DOMConversionMap<HTMLSpanElement> | null {
     return {
-      span: (domNode: HTMLElement) => {
+      span: (domNode: HTMLSpanElement) => {
         if (!domNode.hasAttribute('data-lexical-poll-question')) {
           return null;
         }

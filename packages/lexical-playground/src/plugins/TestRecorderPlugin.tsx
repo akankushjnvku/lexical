@@ -311,8 +311,9 @@ ${steps.map(formatStep).join(`\n`)}
           ) {
             const browserSelection = window.getSelection();
             if (
-              browserSelection.anchorNode == null ||
-              browserSelection.focusNode == null
+              browserSelection &&
+              (browserSelection.anchorNode == null ||
+                browserSelection.focusNode == null)
             ) {
               return;
             }
